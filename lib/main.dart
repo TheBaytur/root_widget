@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'InheritedWidget Demo',
+      title: 'Inherited Widget Demo',
       theme: ThemeData(primarySwatch: Colors.purple),
       home: const MyHomePage(title: 'InheritedWidget Demo Home Page'),
     );
