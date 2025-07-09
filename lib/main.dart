@@ -7,7 +7,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -75,7 +74,6 @@ class AppRootWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final rootWidgetState = MyInheritedWidget.of(context)?.myState;
     return Card(
-      
       elevation: 4.0,
 
       child: Column(
