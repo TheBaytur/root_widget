@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,9 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       body: ListView(
         children: <Widget>[
-          MyInheritedWidget(
-            key: UniqueKey(),
-            myState: this,
+          ScopedModel<MyModelState>(
+            model: MyModelState(),
             child: AppRootWidget(),
           ),
         ],
@@ -72,39 +72,41 @@ class AppRootWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rootWidgetState = MyInheritedWidget.of(context)?.myState;
-    return Card(
-      elevation: 4.0,
-
+   
+    return ScopedModelDescendant<MyModelState>(
+    rebuildOnChange: true,
+      builder: (context, child, model) => Card(
+      margin: const EdgeInsets.all(8.0).copyWith(bottom: 32.0),
+      color: Colors.yellowAccent,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        
         children: <Widget>[
-          Text('Root Widget', style: Theme.of(context).textTheme.displaySmall),
+          Text('Counter Widget'),
           Text(
-            '${rootWidgetState?.counterValue}',
+            '${model.counterValue}',
             style: Theme.of(context).textTheme.displaySmall,
           ),
-          SizedBox(height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed:
-                    rootWidgetState == null
-                        ? null
-                        : () => rootWidgetState._incrementCounter(),
-              ),
-              IconButton(
-                icon: Icon(Icons.remove),
-                onPressed:
-                    rootWidgetState == null
-                        ? null
-                        : () => rootWidgetState._decrementCounter(),
-              ),
-            ],
-          ),
+          OverflowBar(
+            
+             
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.remove),
+                  color: Colors.red,
+                  onPressed: () => model.decrementCounter(),
+                      
+                ),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  color: Colors.green,
+                  onPressed: () => model.incrementCounter(),
+                ),
+              ],
+            ),
+          
+          SizedBox(height: 50.0),
         ],
+      ),
       ),
     );
   }
@@ -115,61 +117,78 @@ class Counter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rootWidgetState = MyInheritedWidget.of(context)?.myState;
-    return Card(
+
+   return ScopedModelDescendant<MyModelState>(
+    rebuildOnChange: true,
+      builder: (context, child, model) => Card(
       margin: const EdgeInsets.all(8.0).copyWith(bottom: 32.0),
       color: Colors.yellowAccent,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        
         children: <Widget>[
-          Text('Counter Widget'),
+          Text('Child Widget'),
           Text(
-            '${rootWidgetState?.counterValue}',
+            '${model.counterValue}',
             style: Theme.of(context).textTheme.displaySmall,
           ),
-          SizedBox(
-            child: OverflowBar(
+          OverflowBar(
+            
               alignment: MainAxisAlignment.center,
               children: <Widget>[
                 IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed:
-                      rootWidgetState == null
-                          ? null
-                          : () => rootWidgetState._incrementCounter(),
+                  icon: Icon(Icons.remove),
+                  color: Colors.red,
+                  onPressed: () => model.decrementCounter(),
+                      
                 ),
                 IconButton(
-                  icon: Icon(Icons.remove),
-                  onPressed:
-                      rootWidgetState == null
-                          ? null
-                          : () => rootWidgetState._decrementCounter(),
+                  icon: Icon(Icons.add),
+                  color: Colors.green,
+                  onPressed: () => model.incrementCounter(),
                 ),
               ],
             ),
-          ),
+          
           SizedBox(height: 50.0),
         ],
       ),
+      ),
     );
+       
   }
 }
 
-class MyInheritedWidget extends InheritedWidget {
-  final _MyHomePageState myState;
+// class MyInheritedWidget extends InheritedWidget {
+//   final _MyHomePageState myState;
 
-  const MyInheritedWidget({
-    required Key key,
-    required Widget child,
-    required this.myState,
-  }) : super(key: key, child: child);
+//   const MyInheritedWidget({
+//     required Key key,
+//     required Widget child,
+//     required this.myState,
+//   }) : super(key: key, child: child);
 
-  @override
-  bool updateShouldNotify(MyInheritedWidget oldWidget) {
-    return myState.counterValue != oldWidget.myState.counterValue;
+//   @override
+//   bool updateShouldNotify(MyInheritedWidget oldWidget) {
+//     return myState.counterValue != oldWidget.myState.counterValue;
+//   }
+
+//   static MyInheritedWidget? of(BuildContext context) {
+//     return context.dependOnInheritedWidgetOfExactType<MyInheritedWidget>();
+//   }
+// }
+
+class MyModelState extends Model {
+  int _counter = 0;
+
+  int get counterValue => _counter;
+
+  void incrementCounter() {
+    _counter++;
+    notifyListeners();
   }
 
-  static MyInheritedWidget? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<MyInheritedWidget>();
+  void decrementCounter() {
+    _counter--;
+    notifyListeners();
   }
 }
